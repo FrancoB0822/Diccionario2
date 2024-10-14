@@ -7,11 +7,19 @@ import java.util.regex.Pattern;
 public class FraseAnalizador {
 
     public static void main(String[] args) {
-        // Texto a analizar
-        String texto = "Este es un ejemplo. Aquí hay otra frase. Esta es la tercera frase.";
+        // Crear un Scanner para leer la entrada del usuario
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Por favor, ingresa el texto que deseas analizar:");
+
+        // Leer múltiples líneas de texto hasta que el usuario escriba "FIN"
+        StringBuilder texto = new StringBuilder();
+        String linea;
+        while (!(linea = scanner.nextLine()).equalsIgnoreCase("FIN")) {
+            texto.append(linea).append(" ");
+        }
 
         // Llamar a la función que hace el análisis
-        analizarTexto(texto);
+        analizarTexto(texto.toString());
     }
 
     public static void analizarTexto(String texto) {
@@ -29,7 +37,7 @@ public class FraseAnalizador {
 
             // Dividir la frase en palabras
             String[] palabras = frase.split("\\s+"); // Separar por espacios en blanco
-            Map<Integer, Integer> contadorPalabrasPorLongitud = new HashMap<>();
+            Map<Integer, List<String>> palabrasPorLongitud = new HashMap<>();
 
             // Contar letras y palabras por longitud
             int totalPalabrasEnFrase = 0;
@@ -43,18 +51,22 @@ public class FraseAnalizador {
                     totalPalabrasEnFrase++;
                     totalLetras += longitudPalabra;
 
-                    // Contar cuántas palabras hay de cada longitud
-                    contadorPalabrasPorLongitud.put(longitudPalabra,
-                            contadorPalabrasPorLongitud.getOrDefault(longitudPalabra, 0) + 1);
+                    // Añadir la palabra a la lista correspondiente a su longitud
+                    palabrasPorLongitud.computeIfAbsent(longitudPalabra, k -> new ArrayList<>()).add(palabra);
                 }
             }
 
             // Mostrar resultados por frase
             System.out.println("En la frase " + fraseNumero + " hay " + totalPalabrasEnFrase + " palabras.");
-            for (Map.Entry<Integer, Integer> entry : contadorPalabrasPorLongitud.entrySet()) {
-                System.out.println(" - Palabras de " + entry.getKey() + " letras: " + entry.getValue());
+
+            // Mostrar la cantidad de palabras de cada longitud junto con la lista de palabras
+            for (Map.Entry<Integer, List<String>> entry : palabrasPorLongitud.entrySet()) {
+                int longitud = entry.getKey();
+                List<String> listaPalabras = entry.getValue();
+                System.out.println(" - Palabras de " + longitud + " letras: " + listaPalabras.size() + " " + listaPalabras);
             }
 
+            System.out.println(); // Espacio entre frases
             fraseNumero++;
         }
 
